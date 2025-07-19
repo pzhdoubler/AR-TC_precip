@@ -3,8 +3,12 @@ import datetime
 import netCDF4
 
 # takes filename of precip file and returns datetime, assumes format ..\MSWEP_daily\{YEAR}\{YEAR}{DAY}.nc
-def parse_precip_filename(f):
+def parse_precip_MSWEP_filename(f):
     return datetime.datetime.strptime(f.split("/")[-1],"%Y%j.nc")
+
+# takes filename of precip file and returns datetime, assumes format ..\MSWEP_daily\{YEAR}\{YEAR}{DAY}.nc
+def parse_precip_DMET_filename(f):
+    return datetime.datetime.strptime(f.split("/")[-1][:20],"OBS_PRAVG_%Y-%m-%d")
 
 # takes filename of freq or avg-intensity filename and returns the equivalent time value
 def parse_output_filename(f):

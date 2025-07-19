@@ -103,7 +103,7 @@ def MSWEP(FOLDER, target_season):
 
     for r,d,f in os.walk(FOLDER):
         for i in range(len(f)):
-            dt = parse_precip_filename(f[i])
+            dt = parse_precip_MSWEP_filename(f[i])
             if season[dt.month] == target_season:
                 files.append(f"{r}/{f[i]}")
 
