@@ -131,14 +131,14 @@ def count_MSWEP_on_MSWEP_percentiles(PERCENTILE_FOLDER, FREQ_FOLDER, INTENSITY_F
                 print(e)
                 continue
 
-def count_DMET_on_DMET_percentiles(PERCENTILE_FOLDER, FREQ_FOLDER, INTENSITY_FOLDER, all_files, percentiles):
+def count_DMET_on_DMET_percentiles(PERCENTILE_FOLDER, FREQ_FOLDER, INTENSITY_FOLDER, config, all_files, percentiles):
     # get percentile files
     percentile_title = "DMET"
     per_files = [f for f in os.listdir(PERCENTILE_FOLDER) if f.startswith(percentile_title)]
     # get expected shape of  percentile files
-    ds = netCDF4.Dataset(f"./percentiles/{per_files[0]}")
-    lon2d = ds.variables["LONG"][:,:]
-    lat2d = ds.variables["LAT"][:,:]
+    ds = netCDF4.Dataset(config)
+    lon2d = ds.variables["XLONG"][0,:,:]
+    lat2d = ds.variables["XLAT"][0,:,:]
 
     # (lat, lon, percentile, season)
     percentile_grids = np.zeros((lon2d.shape[0], lon2d.shape[1], len(percentiles), 4))
@@ -260,14 +260,14 @@ def setup_freq_count():
 percentiles = [5.0, 1.0, 0.1, 0.01]
 
 # MSWEP on MSWEP percentiles
-FOLDER = "../MSWEP_daily"
-files = []
-for r,d,f in os.walk(FOLDER):
-    for i in range(len(f)):
-        files.append(f"{r}/{f[i]}")
-count_MSWEP_on_MSWEP_percentiles("percentiles", "frequencies/MSWEP-on-MSWEP", "intensities/MSWEP-on-MSWEP", files, percentiles)
+#FOLDER = "../MSWEP_daily"
+#files = []
+#for r,d,f in os.walk(FOLDER):
+#    for i in range(len(f)):
+#        files.append(f"{r}/{f[i]}")
+#count_MSWEP_on_MSWEP_percentiles("percentiles", "frequencies/MSWEP-on-MSWEP", "intensities/MSWEP-on-MSWEP", files, percentiles)
 
 
 # DMET on DMET percentiles
-# files = ["../OBS/" + f for f in os.listdir("../OBS")]
-# count_DMET_on_DMET_percentiles("percentiles", "frequencies/DMET-on-DMET", "intensities/DMET-on-DMET", files, percentiles)
+files = ["../OBS/" + f for f in os.listdir("../OBS")]
+count_DMET_on_DMET_percentiles("percentiles", "frequencies/DMET-on-DMET", "intensities/DMET-on-DMET", "/ocean/projects/ees210011p/shared/zafix5/wrfout_d01_1979-12-31_00:00:00", files, percentiles)
