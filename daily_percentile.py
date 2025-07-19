@@ -177,7 +177,7 @@ def DMET_get_top_percentiles(files, lon, lat, percentiles, target_season, title 
                 dt = ref_time + datetime.timedelta(days=t)
                 if season[dt.month] == season_index:
                     # get lons and lats of region
-                    precip = data.variables["PRAVG"][0,:,:]
+                    precip = data.variables["PRAVG"][i,:,:]
                     precip = np.ma.masked_invalid(precip)
 
                     # put new data in extra slot, sort, next run will replace smallest data
@@ -239,5 +239,5 @@ def DMET(FOLDER, config_file, target_season):
 
 
 for s in range(4):
-    MSWEP("../MSWEP_daily", s)
-    #DMET("../OBS/", "/ocean/projects/ees210011p/shared/zafix5/wrfout_d01_1979-12-31_00:00:00", s)
+    #MSWEP("../MSWEP_daily", s)
+    DMET("../OBS/", "/ocean/projects/ees210011p/shared/zafix5/wrfout_d01_1979-12-31_00:00:00", s)
