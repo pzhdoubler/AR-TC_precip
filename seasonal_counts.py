@@ -340,7 +340,7 @@ def count_CWRF_on_DMET_percentiles(PERCENTILE_FOLDER, FREQ_FOLDER, INTENSITY_FOL
                 intensity_sum = np.zeros((lon2d.shape[0], lon2d.shape[1], len(percentiles)), dtype=np.float64)
                 cur_season = season[dt.month]
 
-            precip = dt.variables["PRAVG"][i, 0, :, :]
+            precip = ds.variables["PRAVG"][i, 0, :, :]
             precip = np.ma.masked_where(precip < -900, precip)
 
             # count frequency of each percentile and sum intensities of exceedences
@@ -368,12 +368,12 @@ def count_CWRF_on_DMET_percentiles(PERCENTILE_FOLDER, FREQ_FOLDER, INTENSITY_FOL
 percentiles = [5.0, 1.0, 0.1, 0.01]
 
 # MSWEP on MSWEP percentiles
-FOLDER = "../MSWEP_daily"
-files = []
-for r,d,f in os.walk(FOLDER):
-   for i in range(len(f)):
-       files.append(f"{r}/{f[i]}")
-count_MSWEP_on_MSWEP_percentiles("percentiles", "frequencies/MSWEP-on-MSWEP", "intensities/MSWEP-on-MSWEP", files, percentiles)
+#FOLDER = "../MSWEP_daily"
+#files = []
+#for r,d,f in os.walk(FOLDER):
+#   for i in range(len(f)):
+#       files.append(f"{r}/{f[i]}")
+#count_MSWEP_on_MSWEP_percentiles("percentiles", "frequencies/MSWEP-on-MSWEP", "intensities/MSWEP-on-MSWEP", files, percentiles)
 
 
 # DMET on DMET percentiles
@@ -382,5 +382,5 @@ count_MSWEP_on_MSWEP_percentiles("percentiles", "frequencies/MSWEP-on-MSWEP", "i
 
 
 # CWRF on DMET percentiles
-# file = "/ocean/projects/ees210011p/shared/zafix5/post/zafix5_PR_daily.nc"
-# count_DMET_on_DMET_percentiles("percentiles", "frequencies/CWRF-on-DMET", "intensities/CWRF-on-DMET", "/ocean/projects/ees210011p/shared/zafix5/wrfout_d01_1979-12-31_00:00:00", file, percentiles)
+file = "/ocean/projects/ees210011p/shared/zafix5/post/zafix5_PR_daily.nc"
+count_CWRF_on_DMET_percentiles("percentiles", "frequencies/CWRF-on-DMET", "intensities/CWRF-on-DMET", "/ocean/projects/ees210011p/shared/zafix5/wrfout_d01_1979-12-31_00:00:00", file, percentiles)
