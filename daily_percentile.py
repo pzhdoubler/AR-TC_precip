@@ -11,6 +11,9 @@ from helpers import *
 def MSWEP_get_top_percentiles(files, lon, lat, percentiles, title = "", target_season=""):
     # parse lon, lat
     # assume they are passed sorted
+    # LON = [-138.95,-52.95]
+    # LAT = [15.95,57.05]
+
     lon[1] += 0.1
     lat[0] -= 0.1
     lon_labels = np.arange(lon[0], lon[1], 0.1)
@@ -18,9 +21,6 @@ def MSWEP_get_top_percentiles(files, lon, lat, percentiles, title = "", target_s
     lon2d, lat2d = np.meshgrid(lon_labels, lat_labels)
     lon = sorted([round((l + 179.95) * 10) for l in lon])
     lat = sorted([round((-1*l + 89.95) * 10) for l in lat])   # lat must be flipped
-
-    print(lon2d.shape)
-    print()
 
     # parse percentiles
     max_percentile = max(percentiles)
@@ -119,6 +119,7 @@ def MSWEP(FOLDER, target_season):
     # title = "WORLD"
     # percentiles = [1.0, 0.1, 0.01]
 
+    print(f"Getting top percentiles for {season_labels[target_season]} ...")
     MSWEP_get_top_percentiles(files, LON, LAT, percentiles, title, season_labels[target_season])
 
 

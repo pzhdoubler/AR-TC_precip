@@ -1,5 +1,6 @@
 *.csv
 *.png
+*.nc
 venv/*
 *.pyc
 .vscode/*
