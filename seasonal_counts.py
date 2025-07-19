@@ -62,7 +62,7 @@ def count_MSWEP_on_MSWEP_percentiles(PERCENTILE_FOLDER, FREQ_FOLDER, INTENSITY_F
                     for p, percentile in enumerate(percentiles):
                         percentile_str = percentile_title + str(percentile).replace(".","-")
                         # frequency path
-                        f_name = f"{year}_{season_labels[cur_season]}_freq.csv"
+                        f_name = f"{year}_{season_labels[cur_season]}_freq.nc"
                         f_path = f"./{FREQ_FOLDER}/{percentile_str}/"
                         if not os.path.exists(f_path):
                             os.makedirs(f_path)
@@ -79,7 +79,7 @@ def count_MSWEP_on_MSWEP_percentiles(PERCENTILE_FOLDER, FREQ_FOLDER, INTENSITY_F
                             print(e)
 
                         # intensity path
-                        i_name = f"{year}_{season_labels[cur_season]}_avg-intensity.csv"
+                        i_name = f"{year}_{season_labels[cur_season]}_avg-intensity.nc"
                         i_path = f"./{INTENSITY_FOLDER}/{percentile_str}/"
                         if not os.path.exists(i_path):
                             os.makedirs(i_path)
@@ -185,7 +185,7 @@ def count_DMET_on_DMET_percentiles(PERCENTILE_FOLDER, FREQ_FOLDER, INTENSITY_FOL
                     for p, percentile in enumerate(percentiles):
                         percentile_str = percentile_title + str(percentile).replace(".","-")
                         # frequency path
-                        f_name = f"{year}_{season_labels[cur_season]}_freq.csv"
+                        f_name = f"{year}_{season_labels[cur_season]}_freq.nc"
                         f_path = f"./{FREQ_FOLDER}/{percentile_str}/"
                         if not os.path.exists(f_path):
                             os.makedirs(f_path)
@@ -202,7 +202,7 @@ def count_DMET_on_DMET_percentiles(PERCENTILE_FOLDER, FREQ_FOLDER, INTENSITY_FOL
                             print(e)
 
                         # intensity path
-                        i_name = f"{year}_{season_labels[cur_season]}_avg-intensity.csv"
+                        i_name = f"{year}_{season_labels[cur_season]}_avg-intensity.nc"
                         i_path = f"./{INTENSITY_FOLDER}/{percentile_str}/"
                         if not os.path.exists(i_path):
                             os.makedirs(i_path)
