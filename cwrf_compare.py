@@ -11,45 +11,13 @@ import cartopy.feature as cfeature
 
 from helpers import *
 
-def mswep_to_cwrf():
+# takes map data and projects it into the MSWEP domain
+def to_mswep():
     pass
 
-def cwrf_to_mswep():
+# takes map data and projects it into the CWRF domain
+def to_cwrf():
     pass
-
-# assumes thresholds and data are in same domain
-# returns percentile grids, percentile array, lon_labels, lat_labels
-def setup_freq_count(PERCENTILE_FOLDER, percentile_title, percentiles):
-    try:
-        # get percentile files
-        files = [f for f in os.listdir(PERCENTILE_FOLDER) if f.startswith(percentile_title)]
-        # get expected shape of  percentile files
-        df = pd.read_csv(f"./percentiles/{files[0]}", header=0, index_col=0)
-        lon_labels = df.columns.values.astype(np.float64)
-        lat_labels = df.index.values.astype(np.float64)
-        # (lat, lon, percentile, season)
-        percentile_grids = np.zeros((len(lat_labels), len(lon_labels), len(percentiles), 4))
-
-        season_labels = ["DJF", "MAM", "JJA", "SON"]
-        for p, percentile in enumerate(percentiles):
-            p_label = str(percentile).replace(".","-")
-            percentile_files = [f for f in files if p_label in f]
-            for s, season in enumerate(season_labels):
-                season_file = next(f for f in percentile_files if season in f)
-                df = pd.read_csv(f"./percentiles/{season_file}", header=0, index_col=0)
-                if np.allclose(lon_labels, df.columns.values.astype(np.float64)) and np.allclose(lat_labels, df.index.values.astype(np.float64)):
-                    percentile_grids[:,:,p,s] = df.values.astype(np.float64)
-                    print(f"Read in {season_file} ...")
-                else:
-                    print(f"Problem with lon, lat comparison in {season_file}. Quitting ...")
-                    return
-            
-        return percentile_grids, percentile_title, percentiles, lon_labels, lat_labels
-
-    except Exception as e:
-        print("Problem in setup. Quitting ...")
-        print(e)
-        return
     
 
 def count_percentile_freqs(FREQ_FOLDER, INTENSITY_FOLDER, all_files, setup):
@@ -151,3 +119,40 @@ def count_percentile_freqs(FREQ_FOLDER, INTENSITY_FOLDER, all_files, setup):
                 print(f"Error with file {year_files[f]}")
                 print(e)
                 continue
+
+
+def setup_freq_count():
+    pass
+
+# returns percentile grids, percentile array, lon_labels, lat_labels
+def setup_freq_count(PERCENTILE_FOLDER, percentile_title, percentiles):
+    try:
+        # get percentile files
+        files = [f for f in os.listdir(PERCENTILE_FOLDER) if f.startswith(percentile_title)]
+        # get expected shape of  percentile files
+        df = pd.read_csv(f"./percentiles/{files[0]}", header=0, index_col=0)
+        lon_labels = df.columns.values.astype(np.float64)
+        lat_labels = df.index.values.astype(np.float64)
+        # (lat, lon, percentile, season)
+        percentile_grids = np.zeros((len(lat_labels), len(lon_labels), len(percentiles), 4))
+
+        season_labels = ["DJF", "MAM", "JJA", "SON"]
+        for p, percentile in enumerate(percentiles):
+            p_label = str(percentile).replace(".","-")
+            percentile_files = [f for f in files if p_label in f]
+            for s, season in enumerate(season_labels):
+                season_file = next(f for f in percentile_files if season in f)
+                df = pd.read_csv(f"./percentiles/{season_file}", header=0, index_col=0)
+                if np.allclose(lon_labels, df.columns.values.astype(np.float64)) and np.allclose(lat_labels, df.index.values.astype(np.float64)):
+                    percentile_grids[:,:,p,s] = df.values.astype(np.float64)
+                    print(f"Read in {season_file} ...")
+                else:
+                    print(f"Problem with lon, lat comparison in {season_file}. Quitting ...")
+                    return
+            
+        return percentile_grids, percentile_title, percentiles, lon_labels, lat_labels
+
+    except Exception as e:
+        print("Problem in setup. Quitting ...")
+        print(e)
+        return

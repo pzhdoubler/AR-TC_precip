@@ -15,11 +15,12 @@ def MSWEP_get_top_percentiles(files, lon, lat, percentiles, title = "", target_s
     lat[0] -= 0.1
     lon_labels = np.arange(lon[0], lon[1], 0.1)
     lat_labels = np.arange(lat[1], lat[0], -0.1)
+    lon2d, lat2d = np.meshgrid(lon_labels, lat_labels)
     lon = sorted([round((l + 179.95) * 10) for l in lon])
     lat = sorted([round((-1*l + 89.95) * 10) for l in lat])   # lat must be flipped
-    lon_range = lon[1] - lon[0]
-    lat_range = lat[1] - lat[0]
 
+    print(lon2d.shape)
+    print()
 
     # parse percentiles
     max_percentile = max(percentiles)
@@ -37,8 +38,8 @@ def MSWEP_get_top_percentiles(files, lon, lat, percentiles, title = "", target_s
                 print(f"Data not large enough to take top {p} percentile. Quitting...")
                 return
 
-    # create grid to sort highest percentiles
-    percentile_grid = np.zeros((lat_range, lon_range, max_percentile_len + 1), dtype=np.float32)
+    # create grid to sort highest percnentiles
+    percentile_grid = np.zeros((lon2d.shape[0], lon2d.shape[1], max_percentile_len + 1), dtype=np.float32)
     start = time.time()
     init = True
     print("Getting top percentiles ...")
@@ -54,7 +55,7 @@ def MSWEP_get_top_percentiles(files, lon, lat, percentiles, title = "", target_s
             # get lons and lats of region
             precip = data.variables["precipitation"][:][0][lat[0]:lat[1],lon[0]:lon[1]]
             precip = np.ma.masked_where(precip <= -9999.0, precip)
-
+            
             # put new data in extra slot, sort, next run will replace smallest data
             percentile_grid[:,:,0] = precip
             percentile_grid.sort()
@@ -69,16 +70,23 @@ def MSWEP_get_top_percentiles(files, lon, lat, percentiles, title = "", target_s
             print(f"Error with file {files[f]}")
             print(e)
 
+    path = "percentiles/"
+    if not os.path.exists(path):
+        os.makedirs(path)
 
     # get and save percentiles for each grid point
     for p in range(len(percentiles)):
         percentile_slice = percentile_grid[:,:,percentile_indexes[p]]
         percentile_str = str(percentiles[p]).replace(".","-")
+        fname = f"{title}_{target_season}_top_{percentile_str}_percentile.nc"
         try:
-            print(f"Saving ./percentiles/{title}_{target_season}_top_{percentile_str}_percentile.csv...")
-            df = pd.DataFrame(percentile_slice, index=lat_labels, columns=lon_labels)
-            df.index.name="LAT/LON"
-            df.to_csv(f"./percentiles/{title}_{target_season}_top_{percentile_str}_percentile.csv")
+            save_NETCDF(lon2d, lat2d, percentile_slice, 
+                        "PRTHRESH", 
+                        "mm/day", 
+                        f"Top {percentile_str} Extreme Precip Threshold", 
+                        path, fname, 
+                        f"Top {percentile_str} Percentile Extreme Precipitation"
+                    )
         except Exception as e:
             print(f"Error saving {title}_{target_season}_top_{percentile_str}_percentile.csv")
             print(e)
@@ -100,9 +108,9 @@ def MSWEP(FOLDER, target_season):
                 files.append(f"{r}/{f[i]}")
 
     # US lat/lon box
-    LON = [-133.95,-56.95]
-    LAT = [20.95,54.05]
-    title = f"USA"
+    LON = [-138.95,-52.95]
+    LAT = [15.95,57.05]
+    title = f"MSWEP"
     percentiles = [5.0, 4.0, 3.0, 2.0, 1.0, 0.1, 0.01]
 
     # world lat/lon box
@@ -186,51 +194,23 @@ def DMET_get_top_percentiles(files, lon, lat, percentiles, target_season, title 
             print(e)
 
 
-    if not os.path.exists("percentiles"):
-        os.makedirs("percentiles")
+    path = "percentiles/"
+    if not os.path.exists(path):
+        os.makedirs(path)
 
     # get and save percentiles for each grid point
     for p in range(len(percentiles)):
         percentile_slice = percentile_grid[:,:,percentile_indexes[p]]
         percentile_str = str(percentiles[p]).replace(".","-")
+        fname = f"{title}_{target_season}_top_{percentile_str}_percentile.nc"
         try:
-            fname = f"{title}_{target_season}_top_{percentile_str}_percentile.nc"
-            print(f"Saving ./percentiles/{fname}...")
-            ds = netCDF4.Dataset(f"percentiles/{fname}", 'w', format='NETCDF4')
-            # Define dimensions
-            ds.createDimension('south_north', lon.shape[0])
-            ds.createDimension('west_east', lon.shape[1])
-
-            # Define variables
-            lat_var = ds.createVariable('LAT', 'f4', ('south_north', 'west_east'), zlib=True)
-            lon_var = ds.createVariable('LONG', 'f4', ('south_north', 'west_east'), zlib=True)
-            precip_var = ds.createVariable('PRTHRESH', 'f4', ('south_north', 'west_east'), zlib=True)
-
-            # Set attributes to match original
-            lat_var.units = "degree_north"
-            lat_var.description = "latitude, south is negative"
-            lat_var.MemoryOrder = "XY"
-            lat_var.FieldType = 104
-            lat_var.stagger = ""
-
-            lon_var.units = "degree_east"
-            lon_var.description = "longitude, west is negative"
-            lon_var.MemoryOrder = "XY"
-            lon_var.FieldType = 104
-            lon_var.stagger = ""
-
-            precip_var.units = "mm/day"
-            precip_var.long_name = "Extreme Precip Threshold"
-
-            # Write data
-            lat_var[:, :] = lat
-            lon_var[:, :] = lon
-            precip_var[:, :] = percentile_slice
-
-            # Global attributes (optional)
-            ds.title = f"Top {percentile_str} Percentile Extreme Precipitation"
-            ds.source = "Generated by custom script"
-            ds.close()
+            save_NETCDF(lat, lon, percentile_slice, 
+                        "PRTHRESH", 
+                        "mm/day", 
+                        "Extreme Precip Threshold", 
+                        path, fname, 
+                        f"Top {percentile_str} Percentile Extreme Precipitation"
+                    )
         except Exception as e:
             print(f"Error saving {fname}")
             print(e)
@@ -255,7 +235,8 @@ def DMET(FOLDER, config_file, target_season):
     DMET_get_top_percentiles(files, LON, LAT, percentiles, season_labels[target_season], title)
 
 
-#MSWEP("../MSWEP_daily", 3)
+
 
 for s in range(4):
-    DMET("../OBS/", "/ocean/projects/ees210011p/shared/zafix5/wrfout_d01_1979-12-31_00:00:00", s)
+    MSWEP("../MSWEP_daily", s)
+    #DMET("../OBS/", "/ocean/projects/ees210011p/shared/zafix5/wrfout_d01_1979-12-31_00:00:00", s)
