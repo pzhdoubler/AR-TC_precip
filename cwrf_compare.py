@@ -11,9 +11,7 @@ import cartopy.feature as cfeature
 
 from helpers import *
 
-# takes map data and projects it into the MSWEP domain
-def to_mswep():
-    pass
+
 
 # takes map data and projects it into the CWRF domain
 def to_cwrf():
