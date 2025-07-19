@@ -177,9 +177,9 @@ def count_DMET_on_DMET_percentiles(PERCENTILE_FOLDER, FREQ_FOLDER, INTENSITY_FOL
         times = data.variables["time"]
         times = np.ma.masked_invalid(times)
 
-        for i, time in enumerate(times):
+        for i, t in enumerate(times):
             try:
-                dt = ref_time + datetime.timedelta(days=time)
+                dt = ref_time + datetime.timedelta(days=t)
                 # save current frequencies if switched to a new season
                 if season[dt.month] != cur_season:
                     for p, percentile in enumerate(percentiles):
@@ -237,7 +237,7 @@ def count_DMET_on_DMET_percentiles(PERCENTILE_FOLDER, FREQ_FOLDER, INTENSITY_FOL
                     intensity_sum[:,:,p] += precip*exceedence_grid
 
             except Exception as e:
-                print(f"Error with file {file}, time {time}")
+                print(f"Error with file {file}, time {t}")
                 print(e)
                 continue
     
