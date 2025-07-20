@@ -137,8 +137,8 @@ def count_DMET_on_DMET_percentiles(PERCENTILE_FOLDER, FREQ_FOLDER, INTENSITY_FOL
     per_files = [f for f in os.listdir(PERCENTILE_FOLDER) if f.startswith(percentile_title)]
     # get expected shape of  percentile files
     ds = netCDF4.Dataset(config)
-    lon2d = ds.variables["XLONG"][0,:,:]
-    lat2d = ds.variables["XLAT"][0,:,:]
+    lon2d = ds.variables["LONG"][:,:]
+    lat2d = ds.variables["LAT"][:,:]
 
     # (lat, lon, percentile, season)
     percentile_grids = np.zeros((lon2d.shape[0], lon2d.shape[1], len(percentiles), 4))
@@ -260,8 +260,8 @@ def count_CWRF_on_MSWEP_percentiles(PERCENTILE_FOLDER, FREQ_FOLDER, INTENSITY_FO
 
     # get CWRF shape
     ds = netCDF4.Dataset(config)
-    cwrf_lon2d = ds.variables["XLONG"][0,:,:]
-    cwrf_lat2d = ds.variables["XLAT"][0,:,:]
+    cwrf_lon2d = ds.variables["LONG"][:,:]
+    cwrf_lat2d = ds.variables["LAT"][:,:]
     ds.close()
 
     # (lat, lon, percentile, season)
@@ -344,7 +344,7 @@ def count_CWRF_on_MSWEP_percentiles(PERCENTILE_FOLDER, FREQ_FOLDER, INTENSITY_FO
 
             precip = ds.variables["PRAVG"][i, 0, :, :]
             precip = np.ma.masked_where(precip < -900, precip)
-            precip = to_mswep(lon2d, lat2d, cwrf_lon2d, cwrf_lat2d, precip)
+            precip = change_domain(lon2d, lat2d, cwrf_lon2d, cwrf_lat2d, precip)
 
             # count frequency of each percentile and sum intensities of exceedences
             for p in range(len(percentiles)):
@@ -372,8 +372,8 @@ def count_CWRF_on_DMET_percentiles(PERCENTILE_FOLDER, FREQ_FOLDER, INTENSITY_FOL
     per_files = [f for f in os.listdir(PERCENTILE_FOLDER) if f.startswith(percentile_title)]
     # get expected shape of  percentile files
     ds = netCDF4.Dataset(config)
-    lon2d = ds.variables["XLONG"][0,:,:]
-    lat2d = ds.variables["XLAT"][0,:,:]
+    lon2d = ds.variables["LONG"][:,:]
+    lat2d = ds.variables["LAT"][:,:]
 
     # (lat, lon, percentile, season)
     percentile_grids = np.zeros((lon2d.shape[0], lon2d.shape[1], len(percentiles), 4))
@@ -491,14 +491,14 @@ percentiles = [5.0, 1.0, 0.1, 0.01]
 
 # DMET on DMET percentiles
 # files = ["../OBS/" + f for f in os.listdir("../OBS")]
-# count_DMET_on_DMET_percentiles("percentiles", "frequencies/DMET-on-DMET", "intensities/DMET-on-DMET", "/ocean/projects/ees210011p/shared/zafix5/wrfout_d01_1979-12-31_00:00:00", files, percentiles)
+# count_DMET_on_DMET_percentiles("percentiles", "frequencies/DMET-on-DMET", "intensities/DMET-on-DMET", "../cwrf_domain.nc", files, percentiles)
 
 
 # CWRF on MSWEP percentiles
-file = "/ocean/projects/ees210011p/shared/zafix5/post/zafix5_PR_daily.nc"
-count_CWRF_on_MSWEP_percentiles("percentiles", "frequencies/CWRF-on-MSWEP", "intensities/CWRF-on-MSWEP", "/ocean/projects/ees210011p/shared/zafix5/wrfout_d01_1979-12-31_00:00:00", file, percentiles)
+file = "../zafix5_PR_daily.nc"
+count_CWRF_on_MSWEP_percentiles("percentiles", "frequencies/CWRF-on-MSWEP", "intensities/CWRF-on-MSWEP", "../cwrf_domain.nc", file, percentiles)
 
 
 # CWRF on DMET percentiles
-file = "/ocean/projects/ees210011p/shared/zafix5/post/zafix5_PR_daily.nc"
-count_CWRF_on_DMET_percentiles("percentiles", "frequencies/CWRF-on-DMET", "intensities/CWRF-on-DMET", "/ocean/projects/ees210011p/shared/zafix5/wrfout_d01_1979-12-31_00:00:00", file, percentiles)
+# file = "/ocean/projects/ees210011p/shared/zafix5/post/zafix5_PR_daily.nc"
+# count_CWRF_on_DMET_percentiles("percentiles", "frequencies/CWRF-on-DMET", "intensities/CWRF-on-DMET", "../cwrf_domain.nc", file, percentiles)
