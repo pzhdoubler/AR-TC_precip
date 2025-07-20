@@ -10,6 +10,8 @@ import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import cartopy.io.shapereader as shpreader
 import shapely.geometry as sgeom
+from shapely.geometry import Polygon, MultiPolygon
+from shapely.ops import unary_union
 
 from helpers import *
 
@@ -17,7 +19,7 @@ from helpers import *
 def CONUS_mask(lon2d, lat2d, states=[]):
     reader = shpreader.natural_earth(resolution='110m',
                                      category='cultural',
-                                     name='admin_1_states_provinces_lakes_shp')
+                                     name='admin_1_states_provinces')
 
     records = shpreader.Reader(reader).records()
 
@@ -37,15 +39,24 @@ def CONUS_mask(lon2d, lat2d, states=[]):
     else:
         conus_states = set(states)
 
+    print("Getting geometries ...")
     # Combine geometries for CONUS
-    conus_geom = sgeom.MultiPolygon([
-        rec.geometry for rec in records if rec.attributes['name'] in conus_states
-    ])
+    polygons = []
+    for rec in records:
+        if rec.attributes['name'] in conus_states:
+            geom = rec.geometry
+        if isinstance(geom, Polygon):
+            polygons.append(geom)
+        elif isinstance(geom, MultiPolygon):
+            polygons.extend(geom.geoms)
+
+    conus_geom = unary_union(polygons)
 
     # Flatten grid
     lon_flat = lon2d.flatten()
     lat_flat = lat2d.flatten()
 
+    print("Building mask ...")
     # Build mask
     mask_flat = np.array([
         conus_geom.contains(sgeom.Point(lon, lat)) for lon, lat in zip(lon_flat, lat_flat)
@@ -119,7 +130,7 @@ def map_CWRF_diffs(FIGURE_FOLDER, years, season, data_type, obs_set, percentile,
         ax.add_feature(cfeature.BORDERS, linewidth=1)
         ax.add_feature(cfeature.COASTLINE, linewidth=1)
         ax.add_feature(cfeature.STATES, linewidth=0.5, edgecolor='gray')
-        ax.set_title(years[i] + season)
+        ax.set_title(str(years[i]) + season)
         if len(map_extent) == 4:
             ax.set_extent(map_extent, crs=ccrs.PlateCarree())
     
@@ -130,7 +141,7 @@ def map_CWRF_diffs(FIGURE_FOLDER, years, season, data_type, obs_set, percentile,
     if not os.path.exists(fig_path):
         os.makedirs(fig_path)
 
-    plt.savefig(f"{fig_path}/cwrf_diff_{str.join("-", years)}.png")
+    plt.savefig(f"{fig_path}/cwrf_diff_{str.join("-", [str(y) for y in years])}.png")
     plt.clf()
 
 # makes time series of avg CWRF - OBS extreme precip for year range on provided states
