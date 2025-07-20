@@ -71,8 +71,8 @@ def map_CWRF_diffs(FIGURE_FOLDER, years, season, data_type, obs_set, percentile,
     
     per_title = f"{obs_set}{str(percentile).replace(".","-")}"
     if obs_set == "MSWEP" or obs_set == "DMET":
-        obs_path = f"{data_type}/{obs_set}-on-{obs_set}/{per_title}/"
-        cwrf_path = f"{data_type}/CWRF-on-{obs_set}/{per_title}/"
+        obs_path = f"./{data_type}/{obs_set}-on-{obs_set}/{per_title}/"
+        cwrf_path = f"./{data_type}/CWRF-on-{obs_set}/{per_title}/"
     else:
         print("ERROR: invalid obs set passed")
         return
@@ -151,8 +151,8 @@ def time_series_CWRF_diffs(FIGURE_FOLDER, year_range, data_type, percentile, obs
     
     per_title = f"{obs_set}{str(percentile).replace(".","-")}"
     if obs_set == "MSWEP" or obs_set == "DMET":
-        obs_path = f"{data_type}/{obs_set}-on-{obs_set}/{per_title}/"
-        cwrf_path = f"{data_type}/CWRF-on-{obs_set}/{per_title}/"
+        obs_path = f"./{data_type}/{obs_set}-on-{obs_set}/{per_title}/"
+        cwrf_path = f"./{data_type}/CWRF-on-{obs_set}/{per_title}/"
     else:
         print("ERROR: invalid obs set passed")
         return
