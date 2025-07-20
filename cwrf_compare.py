@@ -88,10 +88,10 @@ def map_CWRF_diffs(FIGURE_FOLDER, years, season, data_type, obs_set, percentile,
     data = np.ma.masked_all((len(years), lon2d.shape[0], lon2d.shape[1]))
     # read in data
     for i, year in enumerate(years):
-        ds = netCDF4.Dataset(f"{obs_path}{year}_{season}_{data_label}")
+        ds = netCDF4.Dataset(f"{obs_path}{year}_{season}_{data_label}.nc")
         obs = ds.variables[data_key][:,:]
         ds.close()
-        ds = netCDF4.Dataset(f"{cwrf_path}{year}_{season}_{data_label}")
+        ds = netCDF4.Dataset(f"{cwrf_path}{year}_{season}_{data_label}.nc")
         cwrf = ds.variables[data_key][:,:]
         ds.close()
 
