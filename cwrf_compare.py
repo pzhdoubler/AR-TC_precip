@@ -79,7 +79,7 @@ def map_CWRF_diffs(FIGURE_FOLDER, years, season, data_type, obs_set, percentile,
     
     # set up data parse
     print("Reading in data and making mask...")
-    init_file = f"{obs_path}{years[0]}_{season}_{data_label}"
+    init_file = f"{obs_path}{years[0]}_{season}_{data_label}.nc"
     ds = netCDF4.Dataset(init_file, m='r')
     lon2d = ds.variables["LONG"][:,:]
     lat2d = ds.variables["LAT"][:,:]
