@@ -126,7 +126,7 @@ def map_CWRF_diffs(FIGURE_FOLDER, years, season, data_type, obs_set, percentile,
 
     # plot years
     for i, ax in enumerate(axes):
-        mesh = ax.pcolormesh(lon2d, lat2d, data[i], cmap="coolwarm", transform=ccrs.PlateCarree(), vmin=-abs_max, vmax=abs_max)
+        mesh = ax.pcolormesh(lon2d, lat2d, data[i], cmap="seismic", transform=ccrs.PlateCarree(), vmin=-abs_max, vmax=abs_max)
         ax.add_feature(cfeature.BORDERS, linewidth=1)
         ax.add_feature(cfeature.COASTLINE, linewidth=1)
         ax.add_feature(cfeature.STATES, linewidth=0.5, edgecolor='gray')
@@ -137,12 +137,15 @@ def map_CWRF_diffs(FIGURE_FOLDER, years, season, data_type, obs_set, percentile,
     cbar = fig.colorbar(mesh, ax=axes, orientation='vertical', fraction=0.02, pad=0.04)
     cbar.set_label(f"Extreme Precip {data_title} ({data_units})")
 
+    # save figure
     fig_path = f"./{FIGURE_FOLDER}/{obs_set}{per_title}"
     if not os.path.exists(fig_path):
         os.makedirs(fig_path)
 
-    plt.savefig(f"{fig_path}/cwrf_diff_{str.join("-", [str(y) for y in years])}.png")
+    fname = f"cwrf_diff_{str.join("-", [str(y) for y in years])}.png"
+    plt.savefig(f"{fig_path}/{fname}")
     plt.clf()
+    print(f"Saved {fname}.")
 
 # makes time series of avg CWRF - OBS extreme precip for year range on provided states
 def time_series_CWRF_diffs(FIGURE_FOLDER, year_range, data_type, percentile, obs_set, states=[]):
@@ -174,9 +177,30 @@ def time_series_CWRF_diffs(FIGURE_FOLDER, year_range, data_type, percentile, obs
     lat2d = ds.variables["LAT"][:,:]
     ds.close()
     mask = CONUS_mask(lon2d, lat2d, states)
+    season_labels = ["DJF", "MAM", "JJA", "SON"]
+    times = np.arange(year_range[0], year_range[1], 0.25)
+    data = np.zeros((len(times)))
 
+    # read in data
+    i = 0
     for year in range(year_range):
-        pass
+        for s, season in enumerate(season_labels):
+            expected_time = year + s*0.25
+            if expected_time != times[i]:
+                print(f"ERROR: Missmatched time value {year}, {season}")
+            ds = netCDF4.Dataset(f"{obs_path}{year}_{season}_{data_label}.nc")
+            obs = ds.variables[data_key][:,:]
+            ds.close()
+            ds = netCDF4.Dataset(f"{cwrf_path}{year}_{season}_{data_label}.nc")
+            cwrf = ds.variables[data_key][:,:]
+            ds.close()
+
+            diff = cwrf - obs
+            diff = np.ma.masked_where(~mask, diff)
+            data[i] = np.mean(diff)
+
+    season_colors = ["darkblue", "hotpink", "lime", "darkgoldenrod"]
+
 
 
 #########################################################################################################
@@ -190,7 +214,7 @@ data_type = "intensities"
 obs_set = "MSWEP"
 percentile = 5.0
 states = []
-map_extent = []
+map_extent = [-125, -66, 24, 49]
 map_CWRF_diffs(FIG_FOLDER, years, season, data_type, obs_set, percentile, states, map_extent)
 
 
