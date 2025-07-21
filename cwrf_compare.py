@@ -148,7 +148,7 @@ def map_CWRF_diffs(FIGURE_FOLDER, years, season, data_type, obs_set, percentile,
     print(f"Saved {fname}.")
 
 # makes time series of avg CWRF - OBS extreme precip for year range on provided states
-def time_series_CWRF_diffs(FIGURE_FOLDER, year_range, data_type, percentile, obs_set, states=[]):
+def time_series_CWRF_diffs(FIGURE_FOLDER, year_range, data_type, percentile, obs_set, states=[], mask_name="CONUS"):
     if data_type == "frequencies":
         data_label = "freq"
         data_key = "EX-PR-FRQ"
@@ -178,16 +178,14 @@ def time_series_CWRF_diffs(FIGURE_FOLDER, year_range, data_type, percentile, obs
     ds.close()
     mask = CONUS_mask(lon2d, lat2d, states)
     season_labels = ["DJF", "MAM", "JJA", "SON"]
-    times = np.arange(year_range[0], year_range[1], 0.25)
-    data = np.zeros((len(times)))
+    years = np.arange(year_range[0], year_range[1], 1)
+    season_data = np.zeros((2,4,len(years)))
 
     # read in data
-    i = 0
-    for year in range(year_range):
+    for y, year in enumerate(years):
         for s, season in enumerate(season_labels):
-            expected_time = year + s*0.25
-            if expected_time != times[i]:
-                print(f"ERROR: Missmatched time value {year}, {season}")
+            season_data[0,s,y] = year + s*0.25
+
             ds = netCDF4.Dataset(f"{obs_path}{year}_{season}_{data_label}.nc")
             obs = ds.variables[data_key][:,:]
             ds.close()
@@ -197,10 +195,46 @@ def time_series_CWRF_diffs(FIGURE_FOLDER, year_range, data_type, percentile, obs
 
             diff = cwrf - obs
             diff = np.ma.masked_where(~mask, diff)
-            data[i] = np.mean(diff)
+            season_data[1,s,y] = np.mean(diff)
 
     season_colors = ["darkblue", "hotpink", "lime", "darkgoldenrod"]
+    print("Plotting data ...")
+    # Set up figure and axes
+    fig, axes = plt.subplots(
+        2, 2, figsize=(14, 10),
+        constrained_layout=True
+    )
+    fig.suptitle(f"Seasonal Average Difference (CWRF - {obs_set}) of Top {percentile} Percentile Precip {data_title} over {mask_name}, {str.join("-",year_range)}")
+    axes = axes.flatten()
 
+    # plot years
+    for i, ax in enumerate(axes):
+        # plot other seasons faintly
+        for j in range(len(season_labels)):
+            if j != i:
+                ax.plot(season_data[0,j,:], season_data[1,j,:], color=season_colors[j], alpha=0.1)
+
+        # plot focus season
+        ax.plot(season_data[0,i,:], season_data[1,i,:], color=season_colors[i])
+
+        # best fit for focus season
+        m, b = np.polyfit(season_data[0,i,:], season_data[1,i,:], 1)
+        x = season_data[0,i,:]
+        ax.plot(x, m*x + b, color="black", linestyle="--", label=f"{m}x + {b}")
+        ax.set_title(season_labels[i])
+        ax.set_xlabel("Years")
+        ax.set_ylabel(data_units)
+        ax.legend()
+
+    # save figure
+    fig_path = f"./{FIGURE_FOLDER}/{obs_set}{per_title}"
+    if not os.path.exists(fig_path):
+        os.makedirs(fig_path)
+
+    fname = f"cwrf_diff_timeseries.png"
+    plt.savefig(f"{fig_path}/{fname}")
+    plt.clf()
+    print(f"Saved {fname}.")
 
 
 #########################################################################################################
@@ -213,8 +247,12 @@ season = "DJF"
 data_type = "intensities"
 obs_set = "MSWEP"
 percentile = 5.0
+
 states = []
+mask_name = "CONUS"
 map_extent = [-125, -66, 24, 49]
+
 map_CWRF_diffs(FIG_FOLDER, years, season, data_type, obs_set, percentile, states, map_extent)
 
+time_series_CWRF_diffs(FIG_FOLDER, [1981,2020], data_type, obs_set, percentile, states, mask_name)
 
