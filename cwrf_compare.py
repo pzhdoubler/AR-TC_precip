@@ -274,8 +274,18 @@ data_type = "intensities"
 obs_set = "MSWEP"
 percentile = 5.0
 
-states = ['California', 'Washington', 'Oregon','Nevada']
-mask_name = "West-Coast"
+states = [
+            'Alabama', 'Arizona', 'Arkansas', 'Colorado', 'Connecticut',
+            'Delaware', 'Florida', 'Georgia', 'Idaho', 'Illinois', 'Indiana', 'Iowa',
+            'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts',
+            'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 
+            'New Hampshire', 'New Jersey', 'New Mexico', 'New York',
+            'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma',
+            'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota',
+            'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia',
+            'West Virginia', 'Wisconsin', 'Wyoming'
+        ]
+mask_name = "Not-West-Coast"
 map_extent = [-125, -66, 24, 51]
 
 annual_time_series_CWRF_diffs(FIG_FOLDER, [1981,2020], data_type, obs_set, percentile, states, mask_name)
