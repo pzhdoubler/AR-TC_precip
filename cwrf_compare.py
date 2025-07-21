@@ -148,7 +148,7 @@ def map_CWRF_diffs(FIGURE_FOLDER, years, season, data_type, obs_set, percentile,
     print(f"Saved {fname}.")
 
 # makes time series of avg CWRF - OBS extreme precip for year range on provided states
-def time_series_CWRF_diffs(FIGURE_FOLDER, year_range, data_type, percentile, obs_set, states=[], mask_name="CONUS"):
+def time_series_CWRF_diffs(FIGURE_FOLDER, year_range, data_type, obs_set, percentile, states=[], mask_name="CONUS"):
     if data_type == "frequencies":
         data_label = "freq"
         data_key = "EX-PR-FRQ"
@@ -171,6 +171,7 @@ def time_series_CWRF_diffs(FIGURE_FOLDER, year_range, data_type, percentile, obs
         print("ERROR: invalid obs set passed")
         return
     
+    print("Reading in data and making mask...")
     init_file = f"{obs_path}{year_range[0]}_DJF_{data_label}"
     ds = netCDF4.Dataset(init_file, m='r')
     lon2d = ds.variables["LONG"][:,:]
