@@ -142,7 +142,7 @@ def map_CWRF_diffs(FIGURE_FOLDER, years, season, data_type, obs_set, percentile,
     if not os.path.exists(fig_path):
         os.makedirs(fig_path)
 
-    fname = f"cwrf_diff_{str.join("-", [str(y) for y in years])}.png"
+    fname = f"cwrf_{season}-{data_label}_diff_{str.join("-", [str(y) for y in years])}.png"
     plt.savefig(f"{fig_path}/{fname}")
     plt.clf()
     print(f"Saved {fname}.")
@@ -232,13 +232,13 @@ def annual_time_series_CWRF_diffs(FIGURE_FOLDER, year_range, data_type, obs_set,
     if not os.path.exists(fig_path):
         os.makedirs(fig_path)
 
-    fname = f"cwrf_diff_timeseries.png"
+    fname = f"cwrf_{data_label}_diff_timeseries.png"
     plt.savefig(f"{fig_path}/{fname}")
     plt.clf()
     print(f"Saved {fname}.")
 
 
-def seasonal_time_series_CWRF_diffs(FIGURE_FOLDER, year_range, data_type, obs_set, percentile, states=[], mask_name="CONUS"):
+def seasonal_time_series_CWRF_diffs(FIGURE_FOLDER, year, season, data_type, obs_set, percentile, states=[], mask_name="CONUS"):
     if data_type == "frequencies":
         data_label = "freq"
         data_key = "EX-PR-FRQ"
@@ -267,16 +267,18 @@ FIG_FOLDER = "figures"
 
 # make diff maps
 years = [1981, 1993, 2005, 2017]
-season = "DJF"
+seasons = ["DJF", "MAM", "JJA", "SON"]
 data_type = "intensities"
-obs_set = "DMET"
+obs_set = "MSWEP"
 percentile = 5.0
 
 states = []
 mask_name = "CONUS"
 map_extent = [-125, -66, 24, 51]
 
-map_CWRF_diffs(FIG_FOLDER, years, season, data_type, obs_set, percentile, states, map_extent)
-
 annual_time_series_CWRF_diffs(FIG_FOLDER, [1981,2020], data_type, obs_set, percentile, states, mask_name)
+
+for season in seasons:
+    map_CWRF_diffs(FIG_FOLDER, years, season, data_type, obs_set, percentile, states, map_extent)
+
 
