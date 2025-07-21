@@ -45,6 +45,8 @@ def CONUS_mask(lon2d, lat2d, states=[]):
     for rec in records:
         if rec.attributes['name'] in conus_states:
             geom = rec.geometry
+        else:
+            continue
         if isinstance(geom, Polygon):
             polygons.append(geom)
         elif isinstance(geom, MultiPolygon):
