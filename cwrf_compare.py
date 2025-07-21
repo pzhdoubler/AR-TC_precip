@@ -232,7 +232,7 @@ def annual_time_series_CWRF_diffs(FIGURE_FOLDER, year_range, data_type, obs_set,
     if not os.path.exists(fig_path):
         os.makedirs(fig_path)
 
-    fname = f"cwrf_{data_label}_diff_timeseries.png"
+    fname = f"{mask_name}_cwrf_{data_label}_diff_timeseries.png"
     plt.savefig(f"{fig_path}/{fname}")
     plt.clf()
     print(f"Saved {fname}.")
@@ -272,13 +272,13 @@ data_type = "intensities"
 obs_set = "MSWEP"
 percentile = 5.0
 
-states = []
-mask_name = "CONUS"
+states = ['California', 'Washington', 'Oregon','Nevada']
+mask_name = "West-Coast"
 map_extent = [-125, -66, 24, 51]
 
 annual_time_series_CWRF_diffs(FIG_FOLDER, [1981,2020], data_type, obs_set, percentile, states, mask_name)
 
-for season in seasons:
-    map_CWRF_diffs(FIG_FOLDER, years, season, data_type, obs_set, percentile, states, map_extent)
+# for season in seasons:
+#     map_CWRF_diffs(FIG_FOLDER, years, season, data_type, obs_set, percentile, states, map_extent)
 
 
