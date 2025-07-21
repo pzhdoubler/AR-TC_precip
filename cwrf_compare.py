@@ -172,7 +172,7 @@ def time_series_CWRF_diffs(FIGURE_FOLDER, year_range, data_type, obs_set, percen
         return
     
     print("Reading in data and making mask...")
-    init_file = f"{obs_path}{year_range[0]}_DJF_{data_label}"
+    init_file = f"{obs_path}{year_range[0]}_DJF_{data_label}.nc"
     ds = netCDF4.Dataset(init_file, m='r')
     lon2d = ds.variables["LONG"][:,:]
     lat2d = ds.variables["LAT"][:,:]
@@ -205,7 +205,7 @@ def time_series_CWRF_diffs(FIGURE_FOLDER, year_range, data_type, obs_set, percen
         2, 2, figsize=(14, 10),
         constrained_layout=True
     )
-    fig.suptitle(f"Seasonal Average Difference (CWRF - {obs_set}) of Top {percentile} Percentile Precip {data_title} over {mask_name}, {str.join("-",year_range)}")
+    fig.suptitle(f"Seasonal Average Difference (CWRF - {obs_set}) of Top {percentile} Percentile Precip {data_title} over {mask_name}, {str.join("-", [str(y) for y in year_range])}")
     axes = axes.flatten()
 
     # plot years
@@ -246,14 +246,14 @@ FIG_FOLDER = "figures"
 years = [1981, 1993, 2005, 2017]
 season = "DJF"
 data_type = "intensities"
-obs_set = "MSWEP"
+obs_set = "DMET"
 percentile = 5.0
 
 states = []
 mask_name = "CONUS"
 map_extent = [-125, -66, 24, 49]
 
-map_CWRF_diffs(FIG_FOLDER, years, season, data_type, obs_set, percentile, states, map_extent)
+#map_CWRF_diffs(FIG_FOLDER, years, season, data_type, obs_set, percentile, states, map_extent)
 
 time_series_CWRF_diffs(FIG_FOLDER, [1981,2020], data_type, obs_set, percentile, states, mask_name)
 
