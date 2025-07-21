@@ -268,7 +268,7 @@ def seasonal_time_series_CWRF_diffs(FIGURE_FOLDER, year, season, data_type, obs_
 FIG_FOLDER = "figures"
 
 # make diff maps
-years = [1984, 1997, 2010, 2017]
+years = [1984, 1996, 2011, 2017]
 seasons = ["DJF", "MAM", "JJA", "SON"]
 data_type = "intensities"
 obs_set = "MSWEP"
@@ -276,7 +276,7 @@ percentile = 5.0
 
 states = []
 mask_name = "CONUS"
-map_extent = [-125, -66, 24, 51]
+map_extent = [-126, -66, 24, 51]
 
 #annual_time_series_CWRF_diffs(FIG_FOLDER, [1981,2020], data_type, obs_set, percentile, states, mask_name)
 
