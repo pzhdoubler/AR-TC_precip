@@ -268,29 +268,19 @@ def seasonal_time_series_CWRF_diffs(FIGURE_FOLDER, year, season, data_type, obs_
 FIG_FOLDER = "figures"
 
 # make diff maps
-years = [1981, 1993, 2005, 2017]
+years = [1984, 1997, 2010, 2017]
 seasons = ["DJF", "MAM", "JJA", "SON"]
 data_type = "intensities"
 obs_set = "MSWEP"
 percentile = 5.0
 
-states = [
-            'Alabama', 'Arizona', 'Arkansas', 'Colorado', 'Connecticut',
-            'Delaware', 'Florida', 'Georgia', 'Idaho', 'Illinois', 'Indiana', 'Iowa',
-            'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts',
-            'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 
-            'New Hampshire', 'New Jersey', 'New Mexico', 'New York',
-            'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma',
-            'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota',
-            'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia',
-            'West Virginia', 'Wisconsin', 'Wyoming'
-        ]
-mask_name = "Not-West-Coast"
+states = []
+mask_name = "CONUS"
 map_extent = [-125, -66, 24, 51]
 
-annual_time_series_CWRF_diffs(FIG_FOLDER, [1981,2020], data_type, obs_set, percentile, states, mask_name)
+#annual_time_series_CWRF_diffs(FIG_FOLDER, [1981,2020], data_type, obs_set, percentile, states, mask_name)
 
-# for season in seasons:
-#     map_CWRF_diffs(FIG_FOLDER, years, season, data_type, obs_set, percentile, states, map_extent)
+for season in seasons:
+    map_CWRF_diffs(FIG_FOLDER, years, season, data_type, obs_set, percentile, states, map_extent)
 
 
