@@ -138,7 +138,7 @@ def map_CWRF_diffs(FIGURE_FOLDER, years, season, data_type, obs_set, percentile,
     cbar.set_label(f"Extreme Precip {data_title} ({data_units})")
 
     # save figure
-    fig_path = f"./{FIGURE_FOLDER}/{obs_set}{per_title}"
+    fig_path = f"./{FIGURE_FOLDER}/{per_title}"
     if not os.path.exists(fig_path):
         os.makedirs(fig_path)
 
@@ -148,7 +148,7 @@ def map_CWRF_diffs(FIGURE_FOLDER, years, season, data_type, obs_set, percentile,
     print(f"Saved {fname}.")
 
 # makes time series of avg CWRF - OBS extreme precip for year range on provided states
-def time_series_CWRF_diffs(FIGURE_FOLDER, year_range, data_type, obs_set, percentile, states=[], mask_name="CONUS"):
+def annual_time_series_CWRF_diffs(FIGURE_FOLDER, year_range, data_type, obs_set, percentile, states=[], mask_name="CONUS"):
     if data_type == "frequencies":
         data_label = "freq"
         data_key = "EX-PR-FRQ"
@@ -228,7 +228,7 @@ def time_series_CWRF_diffs(FIGURE_FOLDER, year_range, data_type, obs_set, percen
         ax.legend()
 
     # save figure
-    fig_path = f"./{FIGURE_FOLDER}/{obs_set}{per_title}"
+    fig_path = f"./{FIGURE_FOLDER}/{per_title}"
     if not os.path.exists(fig_path):
         os.makedirs(fig_path)
 
@@ -237,6 +237,29 @@ def time_series_CWRF_diffs(FIGURE_FOLDER, year_range, data_type, obs_set, percen
     plt.clf()
     print(f"Saved {fname}.")
 
+
+def seasonal_time_series_CWRF_diffs(FIGURE_FOLDER, year_range, data_type, obs_set, percentile, states=[], mask_name="CONUS"):
+    if data_type == "frequencies":
+        data_label = "freq"
+        data_key = "EX-PR-FRQ"
+        data_title = "Frequency"
+        data_units = "# events"
+    elif data_type == "intensities":
+        data_label = "avg-intensity"
+        data_key = "EX-PR-INTENS"
+        data_title = "Average Intensity"
+        data_units = "mm/day"
+    else:
+        print("ERROR: invalid data_type passed")
+        return
+    
+    per_title = f"{obs_set}{str(percentile).replace(".","-")}"
+    if obs_set == "MSWEP" or obs_set == "DMET":
+        obs_path = f"./{data_type}/{obs_set}-on-{obs_set}/{per_title}/"
+        cwrf_path = f"./{data_type}/CWRF-on-{obs_set}/{per_title}/"
+    else:
+        print("ERROR: invalid obs set passed")
+        return
 
 #########################################################################################################
 
@@ -251,9 +274,9 @@ percentile = 5.0
 
 states = []
 mask_name = "CONUS"
-map_extent = [-125, -66, 24, 49]
+map_extent = [-125, -66, 24, 51]
 
-#map_CWRF_diffs(FIG_FOLDER, years, season, data_type, obs_set, percentile, states, map_extent)
+map_CWRF_diffs(FIG_FOLDER, years, season, data_type, obs_set, percentile, states, map_extent)
 
-time_series_CWRF_diffs(FIG_FOLDER, [1981,2020], data_type, obs_set, percentile, states, mask_name)
+annual_time_series_CWRF_diffs(FIG_FOLDER, [1981,2020], data_type, obs_set, percentile, states, mask_name)
 
